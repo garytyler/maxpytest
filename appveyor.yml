@@ -1,0 +1,15 @@
+
+environment:
+  matrix:
+    - PYTHON: "C:\\Python27"
+    
+install:
+  - "%PYTHON%\\python.exe -m pip install wheel pipenv pytest pytest-mock tox codecov"
+
+build: off
+
+test_script:
+  - "%PYTHON%\\python.exe -m tox"
+
+on_success:
+  - codecov -t "d2d3c18b-101f-45fc-a8c0-43ac29741780"

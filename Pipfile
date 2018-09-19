@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+pytest-mock = "*"
+pytest = "*"
+
+[packages]
+pipenv = "*"
+maxpytest = {path = ".", editable = true}
+"e1839a8" = {path = ".", editable = true}
+
+[requires]
+python_version = "2.7"
