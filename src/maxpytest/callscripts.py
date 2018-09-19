@@ -28,7 +28,7 @@ def create_testcaller(cwd, pytestargs):
         call_tests('{0}', {1})
     except Exception as e:
         print(e)
-    """.format(cwd, _pytestargs) 
+    """.format(cwd.replace('\\', r'\\'), _pytestargs) 
     return _create_caller(filename=_filename, 
                           callblock=_callblock,
                           sourcemodule=_sourcemodule)
