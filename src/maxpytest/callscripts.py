@@ -25,10 +25,10 @@ def create_testcaller(cwd, pytestargs):
     _filename = 'maxpytest_testcaller.py'
     _callblock = r"""if __name__ == '__main__':
     try:
-        call_tests('{0}', {1})
+        call_tests(r'{0}', {1})
     except Exception as e:
         print(e)
-    """.format(cwd.replace('\\', r'\\'), _pytestargs) 
+    """.format(cwd, _pytestargs) 
     return _create_caller(filename=_filename, 
                           callblock=_callblock,
                           sourcemodule=_sourcemodule)
@@ -37,7 +37,7 @@ def create_restarter(launchscript=None):
     _sourcemodule = callscript_restarter
     _filename = 'maxpytest_restarter.py'
     _callblock = r"""if __name__ == '__main__':
-    restart('{0}')
+    restart(r'{0}')
     """.format(launchscript) 
     return _create_caller(filename=_filename,
                           callblock=_callblock,

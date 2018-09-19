@@ -17,7 +17,7 @@ def test_create_testcaller(mixedstr, mixedlist):
     # String pytestargs is included in 1 line
     assert 1 is len([line for line in result_lines if str(mixedlist) in line])
 
-def test_create_testcaller(mixedstr):
+def test_create_restarter(mixedstr):
     scriptpath = callscripts.create_restarter(launchscript=mixedstr)
     with open(scriptpath) as f:
         result_lines = f.readlines()
