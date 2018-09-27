@@ -16,15 +16,17 @@ def mock_MXSPyCOM(mocker):
     _filename = getattr(runner.maxcom, 'MXSPyCOM').filename
     return mocker.patch.object(runner.maxcom, 'MXSPyCOM', autospec=True)
 
-def test_runtests_default_calls_both_runner_classes(tmpdir,
-                                                    mock_UserMax,
-                                                    mock_MXSPyCOM):
+def test_runtests_default_calls_UserMax(tmpdir, mocker, mock_UserMax):
+    def raise_runtime_error(x):
+        raise RuntimeError
+    mocker.patch.object(runner.maxcom.MXSPyCOM,
+                        '_get_default_exepaths',
+                        raise_runtime_error)
     runner.runtests(cwd=str(tmpdir),
                      runnerarg=None,
                      pytestargs=[], 
                      restart=None)
     mock_UserMax.assert_called_once_with()
-    mock_MXSPyCOM.assert_called_once_with()
 
 def test_runtests_with_restart_creates_restarter(mocker, tmpdir, tmpfile):
     cwdpath = str(tmpdir)

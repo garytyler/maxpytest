@@ -34,6 +34,8 @@ def _get_default_scriptrunner():
             scriptrunner = ScriptRunner()
         except RuntimeError as e:
             continue
+        else:
+            break
     if not scriptrunner:
         raise e
     else:

@@ -5,10 +5,10 @@
 
 # Overview
 
-Command line tool for testing with the [Pytest](https://docs.pytest.org/en/latest/)  framework in 3ds Max
+Command line tool for a friendly testing workflow using the [Pytest](https://docs.pytest.org/en/latest/)  framework in 3ds Max
 
 * Run tests with all 3ds Max Python APIs, including GUI/PySide2 libraries
-* Source dependencies from a [pipenv](https://pipenv.readthedocs.io/en/latest/) virtual environment; no need to install pip to 3ds Max
+* Source dependencies from a [pipenv](https://pipenv.readthedocs.io/en/latest/) virtual environment
 * Automate a new 3ds Max/python session for each tests invocation
 
 ## Setup
@@ -47,17 +47,13 @@ pipenv install pytest
 
 ## Usage
 
-Due to the caching mechanism of python's import system and Pytest's design, changes made to test files (and any modules they import) will not be reflected in subsequent Pytest invocations _in the same python process_. This means ensuring that your changes are reflected requires a restart of the 3ds Max/python session. You have a few options:
+Due to the caching mechanism of python's import system and Pytest's design, changes made to test files (and any modules they import) will not be reflected in subsequent Pytest invocations _in the same python process_. This means ensuring that your changes are reflected requires a restart of the 3ds Max/python session. 
 
-For maxpytest to handle closing and relaunching 3ds Max automatically: [Run tests using MXSPyCOM](#Run-tests-using-MXSPyCOM)
-
-For a simple setup, or if targeting multiple 3ds Max versions: [Run tests directly with 3ds Max](#Run-tests-directly-with-3ds-Max)
+The argument `-m/--max` directs `maxpytest` how to run your tests. For maxpytest to handle closing and relaunching 3ds Max automatically, [run your tests using MXSPyCOM](#Run-your-tests-using-MXSPyCOM). For a simple setup, or if targeting multiple 3ds Max versions, [run your tests directly with 3ds Max](#Run-your-tests-directly-with-3ds-Max). To use the first discovered method, [run your tests using the default run method](#Run-your-tests-using-the-default-run-method).
 
 ### Run your tests using MXSPyCOM
 
-If tests are invoked with [MXSPyCOM](https://github.com/JeffHanna/MXSPyCOM), closing and relaunching 3ds Max is handled automatically. Any unsaved work will trigger a prompt to save it before closing.
-
-For more about [MXSPyCOM](https://github.com/JeffHanna/MXSPyCOM) see the [wiki](https://github.com/JeffHanna/MXSPyCOM/wiki).
+When you run your tests with [MXSPyCOM](https://github.com/JeffHanna/MXSPyCOM), the closing and relaunching 3ds Max is handled automatically. Any unsaved work will trigger a prompt to save it before closing. For more about [MXSPyCOM](https://github.com/JeffHanna/MXSPyCOM) see the [wiki](https://github.com/JeffHanna/MXSPyCOM/wiki).
 
 To invoke your tests, use `maxpytest -m [path to MXSPyCOM.exe] -py [pytest args]`, with Pytest args following `-py` or `--pytest` as the final command argument.
 
@@ -94,6 +90,10 @@ maxpytest -m 2016 -py tests/ -v
 ```
 
 Test results will print to the 3ds Max Listener.
+
+### Run your tests using the default run method
+
+If `maxtest` is used without a `-m/--max` argument, maxpytest will search for MXSPyCOM.exe at `C:\Program Files\MXSPyCOM\MXSPyCOM.exe`. If not found, the most recent version of 3ds Max installed on the system will be used.
 
 ## Contact
 

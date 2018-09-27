@@ -40,8 +40,6 @@ def test_UserMax_init_find_default_UserMax_succeeds(patch_max_root_env_vars,
                                                     tmpdir,
                                                     tmpfile):
     patch_max_root_env_vars([year_to_patch])
-    exepath = str(tmpfile(dirname='root_dir',
-                          filename=UserMax.filename))
     com = UserMax(versionyear=None, exepath=None)
     assert os.path.isfile(com.exe)
     assert os.path.basename(com.exe) == UserMax.filename

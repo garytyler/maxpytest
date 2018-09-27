@@ -32,7 +32,7 @@ setup(
     long_description_content_type='text/markdown',
     
     python_requires='~=2.7',
-    install_requires=[],
+    install_requires=['pytest'],
     tests_require=['pytest', 'pytest-mock'],
 
     packages=find_packages(where='src'),

@@ -4,13 +4,16 @@ import os
 import pytest
 import subprocess as sp
 from maxpytest import callscripts
- 
+
+# TODO def imported_pytest_is_from_maxpytest_sitepkgs_if_not_avail_in_added
+# TODO def imported_pytest_is_from_added_sitepkgs_if_avail_in_added
+
 @pytest.fixture(scope='module')
 def tempcwd(tmpdir_factory):
     return str(tmpdir_factory.mktemp('cwd'))
 
 @pytest.fixture(scope='class')
-def mock_venv(tempcwd):
+def mock_cwd(tempcwd):
     """Create a mock virtual environment to use as source project for testing testcaller script 
     """
     def run_command(command, cwd):
@@ -34,11 +37,12 @@ def mock_venv(tempcwd):
         else:
             _process.wait()
             return _process
-
-    if _setup().returncode is 0:
+    
+    setup_process = _setup()
+    if setup_process.returncode is 0:
         yield tempcwd
     else:
-        pytest.fail(setup_process.output)
+        pytest.fail(setup_process)
 
     _teardown()
 
@@ -51,22 +55,13 @@ def testcaller(mocker, monkeypatch, request):
     yield _testcaller
 
 class TestExpectedCalls(object):
-    def test_patch_isatty(self, testcaller, mock_venv):
-        testcaller.prep_environment(cwd=mock_venv)
+    def test_patch_isatty(self, testcaller, mock_cwd):
+        testcaller.prep_environment(cwd=mock_cwd)
         testcaller.patch_isatty.assert_called_once_with()
 
-    def test_os_chdir(self, testcaller, mock_venv):
-        testcaller.prep_environment(cwd=mock_venv)
-        testcaller.os.chdir.assert_called_once_with(mock_venv)
+    def test_os_chdir(self, testcaller, mock_cwd):
+        testcaller.prep_environment(cwd=mock_cwd)
+        testcaller.os.chdir.assert_called_once_with(mock_cwd)
 
-    def test_get_pytest(self, mocker, testcaller, mock_venv):
-        assert testcaller.get_pytest(cwd=mock_venv)
-
-    def test_pytest_main(self, mocker, testcaller, mock_venv):
-        mocker.patch.object(testcaller.pytest, 'main', autospec=True)
-
-        _pytestargs = []
-        _args = testcaller.get_args(_pytestargs)
-
-        testcaller.call_tests(cwd=mock_venv, pytestargs=_pytestargs)
-        testcaller.pytest.main.assert_called_once_with(_args)
+    def test_import_pytest(self, mocker, testcaller, mock_cwd):
+        assert testcaller.import_pytest(mxpt_sitepkgs=mock_cwd)

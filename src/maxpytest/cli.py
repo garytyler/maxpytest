@@ -15,15 +15,15 @@ def parse(args):
     parser.add_argument('-h', '--help', action='help',
                         default=argparse.SUPPRESS,
                         help='Show this help message and exit.')
-    parser.add_argument('--cwd',
-                        nargs='?',
-                        help='Override current working directory')
     parser.add_argument('-m', '--max',
                         dest='runnerarg',
                         nargs='?',
                         metavar='YEAR|PATH',
                         help="""Can be 3ds Max version by year, path to 3dsmax.exe, or path to MXSPyCOM.exe. Default is most recent installed version of 3ds Max. If path to MXSPyCOM.exe is provided, currently running 3ds Max instance will be closed and relaunched, with unsaved work triggering a save prompt.
-                        prompt.""")
+                        prompt. """)
+    parser.add_argument('--cwd',
+                        nargs='?',
+                        help='Override current working directory')
     parser.add_argument('--no-restart',
                         dest='restart',
                         action='store_false',
