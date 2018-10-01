@@ -21,11 +21,17 @@ Install with pip using Python 2.7:
 pip install maxpytest
 ```
 
-### Setup pipenv
+## Usage
 
-When run from a project root, modules installed to the project's associated [pipenv](https://pipenv.readthedocs.io/en/latest/) virtual environment. To use a virtual environment associated with another directory (where Pipfile/Pipfile.lock are located) override the current working dir with `maxpytest --cwd`.
+Due to the caching mechanism of python's import system and Pytest's design, changes made to test files (and any modules they import) will not be reflected in subsequent Pytest invocations _in the same python process_. This means ensuring that your changes are reflected requires a restart of the 3ds Max/python session. 
 
-If you already have a pipenv virtual environment for your project, make sure it has pytest installed.
+The argument `-m/--max` directs `maxpytest` how to run your tests. For maxpytest to handle closing and relaunching 3ds Max automatically, [run your tests using MXSPyCOM](#Run-your-tests-using-MXSPyCOM). For a simple setup, or if targeting multiple 3ds Max versions, [run your tests directly with 3ds Max](#Run-your-tests-directly-with-3ds-Max). To use the first discovered method, [run your tests using the default run method](#Run-your-tests-using-the-default-run-method).
+
+### Including your project's virtual environment pipenv
+
+If the current working directory is a project root with an installed [pipenv](https://pipenv.readthedocs.io/en/latest/) virtual environment, that environment's site-packages are made available to the 3ds Max python environment running the tests. Overriding the current working directory with `--cwd` effects this behavior accordingly.
+
+If no [pipenv](https://pipenv.readthedocs.io/en/latest/) virtual environment is discovered in the current working directory and the virtual environment includes a pytest package, that pytest package is used to run the tests. Otherwise maxpytest's pytest dependency is used.
 
 To install pipenv, run from your project root:
 
@@ -44,12 +50,6 @@ Add pytest to the virtual environment:
 ```ps
 pipenv install pytest
 ```
-
-## Usage
-
-Due to the caching mechanism of python's import system and Pytest's design, changes made to test files (and any modules they import) will not be reflected in subsequent Pytest invocations _in the same python process_. This means ensuring that your changes are reflected requires a restart of the 3ds Max/python session. 
-
-The argument `-m/--max` directs `maxpytest` how to run your tests. For maxpytest to handle closing and relaunching 3ds Max automatically, [run your tests using MXSPyCOM](#Run-your-tests-using-MXSPyCOM). For a simple setup, or if targeting multiple 3ds Max versions, [run your tests directly with 3ds Max](#Run-your-tests-directly-with-3ds-Max). To use the first discovered method, [run your tests using the default run method](#Run-your-tests-using-the-default-run-method).
 
 ### Run your tests using MXSPyCOM
 
