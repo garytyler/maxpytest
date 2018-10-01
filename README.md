@@ -27,7 +27,7 @@ Due to the caching mechanism of python's import system and Pytest's design, chan
 
 The argument `-m/--max` directs `maxpytest` how to run your tests. For maxpytest to handle closing and relaunching 3ds Max automatically, [run your tests using MXSPyCOM](#Run-your-tests-using-MXSPyCOM). For a simple setup, or if targeting multiple 3ds Max versions, [run your tests directly with 3ds Max](#Run-your-tests-directly-with-3ds-Max). To use the first discovered method, [run your tests using the default run method](#Run-your-tests-using-the-default-run-method).
 
-### Including your project's virtual environment pipenv
+### Including site-packages from a pipenv virtual environment
 
 If the current working directory is a project root with an installed [pipenv](https://pipenv.readthedocs.io/en/latest/) virtual environment, that environment's site-packages are made available to the 3ds Max python environment running the tests. Overriding the current working directory with `--cwd` effects this behavior accordingly.
 
