@@ -23,7 +23,7 @@ pip install maxpytest
 
 ## Usage
 
-Due to the caching mechanism of python's import system and Pytest's design, changes made to test files (and any modules they import) will not be reflected in subsequent Pytest invocations _in the same python process_. This means ensuring that your changes are reflected requires a restart of the 3ds Max/python session. 
+Due to the caching mechanism of python's import system and Pytest's design, changes made to test files (and any modules they import) will not be reflected in subsequent Pytest invocations _in the same python process_. This means ensuring that your changes are reflected requires a restart of the 3ds Max/python session.
 
 The argument `-m/--max` directs `maxpytest` how to run your tests. For maxpytest to handle closing and relaunching 3ds Max automatically, [run your tests using MXSPyCOM](#Run-your-tests-using-MXSPyCOM). For a simple setup, or if targeting multiple 3ds Max versions, [run your tests directly with 3ds Max](#Run-your-tests-directly-with-3ds-Max). To use the first discovered method, [run your tests using the default run method](#Run-your-tests-using-the-default-run-method).
 

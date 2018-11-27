@@ -1,10 +1,11 @@
-#!/usr/bin/env python2
 from __future__ import print_function
 import os
 import subprocess
 
 
 class CommandExecutor(object):
+    filename = None
+
     def __init__(self, exepath):
         if not exepath:
             self.exe = self._find_default_exepath()
@@ -16,10 +17,10 @@ class CommandExecutor(object):
             raise ValueError(exepath)
 
     def _get_default_exepaths(self):
-        raise NotImplementedError 
+        raise NotImplementedError
 
     def run_script(self):
-        raise NotImplementedError 
+        raise NotImplementedError
 
     def _matches_and_isfile(self, exepath):
         if self.filename == os.path.basename(exepath):
@@ -31,44 +32,50 @@ class CommandExecutor(object):
         for exepath in self._get_default_exepaths():
             if self._matches_and_isfile(exepath):
                 return exepath
-        raise RuntimeError('{0} installation not found.'.format(self.filename))
+        raise RuntimeError("{0} installation not found.".format(self.filename))
+
 
 class MXSPyCOM(CommandExecutor):
     """
     exe - path to MXSPyCOM.exe
     """
-    filename = 'MXSPyCOM.exe'
+
+    filename = "MXSPyCOM.exe"
+
     def __init__(self, exepath=None):
         if not exepath:
             exepath = self._find_default_exepath()
         CommandExecutor.__init__(self, exepath=exepath)
 
     def _get_default_exepaths(self):
-        progfiles = os.environ['PROGRAMFILES']
-        default_path = os.path.join(progfiles, 'MXSPyCOM', 'MXSPyCOM.exe')
+        progfiles = os.environ["PROGRAMFILES"]
+        default_path = os.path.join(progfiles, "MXSPyCOM", "MXSPyCOM.exe")
         return [default_path]
 
-    def run_script(self, scriptpath):    
+    def run_script(self, scriptpath):
         command = r'"{0}" -s "{1}"'.format(self.exe, scriptpath)
         subprocess.Popen(command, shell=True)
-        
+
+
 class UserMax(CommandExecutor):
-    """Retrieve/store path data about targeted 3ds Max installation and launching with launch scripts
+    """Retrieve/store path data about targeted 3ds Max installation and launching with
+    launch scripts
     """
-    filename = '3dsmax.exe'
-    supported_version_years = list(range(2012, 2019 +1))
+
+    filename = "3dsmax.exe"
+    supported_version_years = list(range(2012, 2019 + 1))
+
     def __init__(self, versionyear=None, exepath=None):
         if all([exepath, versionyear]):
-            msg = self.__name__, 'accepts either year or exe as args, not both'
-            raise ValueError(msg)
+            raise ValueError
         elif versionyear:
             _root = self._get_max_root(versionyear)
             exepath = os.path.join(_root, self.filename)
         CommandExecutor.__init__(self, exepath=exepath)
 
     def run_script(self, scriptpath):
-        command = '\"{0}\" -U PythonHost \"{1}\"'.format(self.exe, scriptpath)
-        proc = subprocess.Popen(command, shell=True)
+        command = '"{0}" -U PythonHost "{1}"'.format(self.exe, scriptpath)
+        subprocess.Popen(command, shell=True)
 
     def _get_full_year(self, partial_year):
         partial_year_str = str(partial_year)
@@ -77,7 +84,7 @@ class UserMax(CommandExecutor):
                 return full_year
 
     def _get_max_root_env_var(self, year):
-        return 'ADSK_3DSMAX_X64_{0}'.format(str(year))
+        return "ADSK_3DSMAX_X64_{0}".format(str(year))
 
     def _get_max_root(self, year):
         if len(str(year)) < 4:
@@ -85,7 +92,7 @@ class UserMax(CommandExecutor):
         return os.environ[self._get_max_root_env_var(year)]
 
     def _get_default_exepaths(self):
-        """Returns environment variable, root path of executable of latest 3ds 
+        """Returns environment variable, root path of executable of latest 3ds
         Max version installed."""
         default_paths = []
         for year in self.supported_version_years[::-1]:
