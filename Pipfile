@@ -6,9 +6,12 @@ name = "pypi"
 [dev-packages]
 pytest-mock = "*"
 pylint = "*"
+pytest-cov = "*"
+tox = "*"
 
 [packages]
 pytest = "*"
+pipenv = "*"
 
 [requires]
 python_version = "2.7"

@@ -1,10 +1,11 @@
 
 environment:
+  CODECOV_TOKEN: "f724c10c-2237-44b6-91af-1de44fe33bfd"
   matrix:
-    - PYTHON: "C:\\Python27"
-    
+    - PYTHON: "C:\\Python27-x64"
+
 install:
-  - "%PYTHON%\\python.exe -m pip install pipenv pytest pytest-mock tox codecov"
+  - "%PYTHON%\\python.exe -m pip install tox codecov"
 
 build: off
 
@@ -12,4 +13,4 @@ test_script:
   - "%PYTHON%\\python.exe -m tox"
 
 on_success:
-  - codecov -t "f724c10c-2237-44b6-91af-1de44fe33bfd"
+  - "%PYTHON%\\python.exe -m codecov -t %CODECOV_TOKEN% --file coverage.xml"
