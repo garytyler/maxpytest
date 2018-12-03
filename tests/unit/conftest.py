@@ -31,9 +31,9 @@ def patch_max_root_env_vars(monkeypatch, tmpdir):
         for year in UserMax.supported_version_years:
             var = "ADSK_3DSMAX_X64_{0}".format(str(year))
             if int(year) in fake_installed_versions:
-                root_path = tmpdir.mkdir(str(year))
-                exepath = root_path.join(UserMax.filename).write("content")
-                monkeypatch.setenv(var, root_path)
+                targpath = tmpdir.mkdir(str(year))
+                targpath.join(UserMax.filename).write("content")
+                monkeypatch.setenv(var, str(targpath))
             else:
                 try:
                     monkeypatch.delenv(var)

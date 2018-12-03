@@ -47,7 +47,7 @@ def test_runtests_default_no_max_installed_raises(
     tmpdirpath = str(tmpdir)
     patch_max_root_env_vars([])
     mocker.patch.object(runner.maxcom.MXSPyCOM, "_get_default_exepaths", lambda x: "")
-    with pytest.raises(RuntimeError) as e:
+    with pytest.raises(RuntimeError):
         runner.runtests(cwd=tmpdirpath, runnerarg=None, pytestargs=["-r"], restart=None)
 
 
@@ -55,19 +55,19 @@ def test_runtests_default_no_max_installed_raises(
     "runnerarg, exception",
     [(2019, None), (2014, None), (14, None), (4, ValueError), (20199, ValueError)],
 )
-def test_runtests_with_year(mocker, tmpdir, runnerarg, exception):
+def test_runtests_with_year(
+    mocker, tmpdir, mock_UserMax, mock_MXSPyCOM, runnerarg, exception
+):
     def do_runtests():
         runner.runtests(cwd=None, runnerarg=runnerarg, pytestargs=[], restart=None)
 
-    mocker.patch.object(runner.maxcom, "UserMax")
-    mocker.patch.object(runner.maxcom, "MXSPyCOM")
     if exception is None:
         do_runtests()
-        runner.maxcom.UserMax.assert_called_once()
+        mock_UserMax.assert_called_once()
     elif exception:
         with pytest.raises(exception):
             do_runtests()
-    runner.maxcom.MXSPyCOM.assert_not_called()
+    mock_MXSPyCOM.assert_not_called()
 
 
 @pytest.mark.parametrize(
