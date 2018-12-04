@@ -35,10 +35,9 @@ def parse(args):
         "--no-restart",
         dest="restart",
         action="store_false",
-        help="""Close and relaunch 3ds Max, running tests on load. If unsaved work, you
-        will be prompted to save before exit. This option is only available if MXSPyCOM
-        is configured. NOTICE: This is required for Pytest to reload test source
-        files. See README for more info.""",
+        help="""Do not close and relaunch 3ds Max, running tests on load. This option
+        only applies if MXSPyCOM is not configured. If MXSPyCOM is configured, this is
+        the default behavior. See README for more info.""",
     )
     parser.add_argument(
         "-py",
