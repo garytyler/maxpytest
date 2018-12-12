@@ -6,6 +6,14 @@ import site
 import subprocess as sp
 
 
+class HandlePytestQt(object):
+    def __init__(self, args):
+        self.args = args
+
+    def pytest_load_initial_conftests(self, early_config, parser, args):
+        early_config.pluginmanager.set_blocked("pytest-qt")
+
+
 def _get_venv_path(cwd):
     """Returns pipenv virtual environment's site-packages path."""
     proc = sp.Popen(r"pipenv --venv", cwd=cwd, stdout=sp.PIPE, shell=True)
@@ -45,22 +53,23 @@ def patch_isatty():
     sys.stdout.isatty = _isatty
 
 
-def import_pytest(mxpt_sitepkgs):
+def import_pytest(default_pytest_src):
     """If attempted pytest import fails, import using given module_path.
 
-    :param mxpt_sitepkgs: file path of a 'pytest.pyc' in another python
+    :param default_pytest_src: file path of a 'pytest.pyc' in another python
         environment's site-packages
-    :type mxpt_sitepkgs: path string
+    :type default_pytest_src: path string
     :return: available pytest module
     :rtype: module
     """
     try:
         import pytest
     except ImportError:
-        site.addsitedir(mxpt_sitepkgs)
+        default_src_sitepkgs = os.path.abspath(os.path.dirname(default_pytest_src))
+        site.addsitedir(default_src_sitepkgs)
         import pytest
 
-        sys.path.remove(mxpt_sitepkgs)
+        sys.path.remove(default_src_sitepkgs)
     finally:
         return pytest
 
@@ -77,15 +86,15 @@ def get_args(pytestargs):
     return pytestargs + [r"--capture=sys"]
 
 
-def call_tests(cwd, pytestargs, mxpt_sitepkgs):
+def call_tests(cwd, pytestargs, default_pytest_src):
     """Main function to be called from callblock
     """
     add_project_sitepkgs(cwd)
-    pytest = import_pytest(mxpt_sitepkgs)
+    pytest = import_pytest(default_pytest_src)
     prep_environment(cwd)
-    args = get_args(pytestargs)
+    args = pytestargs + [r"--capture=sys"]
     try:
-        pytest.main(args)
+        pytest.main(args=args, plugins=[HandlePytestQt(args)])
     except Exception as e:
         print(e, "Pytest args:", args)
         raise e

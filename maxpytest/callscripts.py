@@ -21,7 +21,6 @@ def _create_caller(filename, callblock, sourcemodule=None):
 
 
 def create_testcaller(cwd, pytestargs):
-    mxpt_sitepkgs = os.path.abspath(os.path.dirname(pytest.__file__))
     _pytestargs = (
         []
         if pytestargs is None
@@ -35,7 +34,7 @@ def create_testcaller(cwd, pytestargs):
     except Exception as e:
         print(e)
     """.format(
-        cwd, _pytestargs, mxpt_sitepkgs
+        cwd, _pytestargs, pytest.__file__
     )
     return _create_caller(
         filename=_filename, callblock=_callblock, sourcemodule=_sourcemodule
