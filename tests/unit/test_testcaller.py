@@ -70,4 +70,4 @@ class TestExpectedCalls(object):
         testcaller.os.chdir.assert_called_once_with(mock_cwd)
 
     def test_import_pytest(self, mocker, testcaller, mock_cwd):
-        assert testcaller.import_pytest(mxpt_sitepkgs=mock_cwd)
+        assert testcaller.import_pytest(mock_cwd)
