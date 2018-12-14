@@ -68,6 +68,3 @@ class TestExpectedCalls(object):
     def test_os_chdir(self, testcaller, mock_cwd):
         testcaller.prep_environment(cwd=mock_cwd)
         testcaller.os.chdir.assert_called_once_with(mock_cwd)
-
-    def test_import_pytest(self, mocker, testcaller, mock_cwd):
-        assert testcaller.import_pytest(mock_cwd)

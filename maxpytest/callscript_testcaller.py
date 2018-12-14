@@ -85,27 +85,6 @@ def patch_isatty():
     sys.stdout.isatty = _isatty
 
 
-def import_pytest(default_pytest_src):
-    """If attempted pytest import fails, import using given module_path.
-
-    :param default_pytest_src: file path of a 'pytest.pyc' in another python
-        environment's site-packages
-    :type default_pytest_src: path string
-    :return: available pytest module
-    :rtype: module
-    """
-    try:
-        import pytest
-    except ImportError:
-        default_src_sitepkgs = os.path.abspath(os.path.dirname(default_pytest_src))
-        site.addsitedir(default_src_sitepkgs)
-        import pytest
-
-        sys.path.remove(default_src_sitepkgs)
-    finally:
-        return pytest
-
-
 def prep_environment(cwd):
     patch_isatty()
     os.chdir(cwd)
@@ -125,6 +104,7 @@ def call_tests(cwd, pytestargs, default_pytest_src):
     import pytest
 
     prep_environment(cwd)
+
     args = pytestargs + [r"--capture=sys"]
     try:
         pytest.main(args=args, plugins=[HandlePytestQt(args)])
