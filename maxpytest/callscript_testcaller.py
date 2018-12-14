@@ -3,6 +3,8 @@ import os
 import sys
 import imp
 import site
+import shutil
+import tempfile
 import subprocess as sp
 
 
@@ -14,16 +16,46 @@ class HandlePytestQt(object):
         early_config.pluginmanager.set_blocked("pytest-qt")
 
 
-def _get_venv_path(cwd):
+def _get_proj_venv_path(cwd):
     """Returns pipenv virtual environment's site-packages path."""
-    proc = sp.Popen(r"pipenv --venv", cwd=cwd, stdout=sp.PIPE, shell=True)
+    proc = sp.Popen(r"pipenv --venv", cwd=cwd, stdout=sp.PIPE)
     venvpath = proc.communicate()[0].rstrip()
     if not os.path.exists(venvpath):
         raise RuntimeError
     return venvpath
 
 
-def add_project_sitepkgs(cwd):
+def _create_venv_with_pytest(rootdir):
+    """Creates a pipenv virtual environment at root rootdir, and install pytest in the
+    virtual environment installed.
+    """
+    if os.path.exists(rootdir):
+        shutil.rmtree(rootdir)
+    os.mkdir(rootdir)
+    p1 = sp.Popen(r"pipenv install pytest", cwd=rootdir)
+    p1.wait()
+    if not (p1.returncode is 0):
+        raise RuntimeError
+
+
+def _get_temp_venv_path():
+    """Look for a temporary pipenv virtual environment with pytest installed at
+    temproot and returns it's path. If one is not found, create one and return it's
+    path.
+    """
+    temproot = os.path.join(tempfile.gettempdir(), "maxpytest_temp_venv")
+    if os.path.exists(temproot):
+        try:
+            venvpath = _get_proj_venv_path(temproot)
+        except RuntimeError:
+            pass
+        else:
+            return venvpath
+    _create_venv_with_pytest(temproot)
+    return _get_proj_venv_path(temproot)
+
+
+def add_sitepkgs(cwd):
     """Get site-packages directory from given project path's virtual environment to
     current python environment and print report.
 
@@ -31,15 +63,15 @@ def add_project_sitepkgs(cwd):
     :type cwd: str
     """
     try:
-        venvpath = _get_venv_path(cwd)
+        venvpath = _get_proj_venv_path(cwd)
     except RuntimeError:
-        sitepkgs = "None"
-    else:
+        venvpath = _get_temp_venv_path()
+    finally:
         sitepkgs = os.path.join(venvpath, r"Lib", r"site-packages")
         sys.path.insert(0, sitepkgs)
         site.addsitedir(sitepkgs)
-    finally:
         print("additional site-pkgs:", sitepkgs)
+        return True
 
 
 def patch_isatty():
@@ -89,8 +121,9 @@ def get_args(pytestargs):
 def call_tests(cwd, pytestargs, default_pytest_src):
     """Main function to be called from callblock
     """
-    add_project_sitepkgs(cwd)
-    pytest = import_pytest(default_pytest_src)
+    add_sitepkgs(cwd)
+    import pytest
+
     prep_environment(cwd)
     args = pytestargs + [r"--capture=sys"]
     try:
