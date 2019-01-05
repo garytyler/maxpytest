@@ -66,3 +66,65 @@ class TestExpectedCalls(object):
     def test_os_chdir(self, testcaller, mock_cwd):
         testcaller.prep_environment(cwd=mock_cwd)
         testcaller.os.chdir.assert_called_once_with(mock_cwd)
+
+
+expand_combo_args_params = [
+    (["-abc"], ["-a", "-b", "-c"]),
+    (["--abc"], ["--abc"]),
+    (["---abc"], ["---abc"]),
+    (["-xzxz"], ["-x", "-z", "-x", "-z"]),
+    (["--xz"], ["--xz"]),
+    (
+        ["-abc", "--abc", "---abc", "-xzxz", "--xz"],
+        ["-a", "-b", "-c", "--abc", "---abc", "-x", "-z", "-x", "-z", "--xz"],
+    ),
+    (["--key=val"], ["--key=val"]),
+    (["-key"], ["-k", "-e", "-y"]),
+    (["key-"], ["key-"]),
+    (["-key=val"], ["-key=val"]),
+    (
+        ["--key=val", "-key", "key-", "-key=val"],
+        ["--key=val", "-k", "-e", "-y", "key-", "-key=val"],
+    ),
+    (["---qwert"], ["---qwert"]),
+    (["-qwertqwert"], ["-q", "-w", "-e", "-r", "-t", "-q", "-w", "-e", "-r", "-t"]),
+    (
+        ["---qwert", "-qwertqwert"],
+        ["---qwert", "-q", "-w", "-e", "-r", "-t", "-q", "-w", "-e", "-r", "-t"],
+    ),
+]
+
+
+@pytest.mark.parametrize("arglist, result", expand_combo_args_params)
+def test_expand_combo_args(arglist, result):
+    assert result == callscript_testcaller.expand_combo_args(arglist)
+
+
+@pytest.mark.parametrize(
+    "arglist, result",
+    [tuple([p[0], p[1] + ["--capture=sys"]]) for p in expand_combo_args_params],
+)
+def test_handle_pytest_args_add_capture_if_none(arglist, result):
+    assert result == callscript_testcaller.handle_pytest_args(arglist)
+
+
+@pytest.mark.parametrize(
+    "arglist, result",
+    [
+        tuple([p[0] + ["--capture=fd"], p[1] + ["--capture=sys"]])
+        for p in expand_combo_args_params
+    ],
+)
+def test_handle_pytest_args_remove_bad_args(arglist, result):
+    assert result == callscript_testcaller.handle_pytest_args(arglist)
+
+
+@pytest.mark.parametrize(
+    "arglist, result",
+    [
+        (["-sv"], ["-s", "-v"]),
+        (["--verbose", "--capture=no"], ["--verbose", "--capture=no"]),
+    ],
+)
+def test_handle_pytest_args_ignore_nocap_args(arglist, result):
+    assert result == callscript_testcaller.handle_pytest_args(arglist)
