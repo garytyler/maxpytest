@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import re
 import sys
 import imp
 import site
@@ -90,11 +91,43 @@ def prep_environment(cwd):
     os.chdir(cwd)
 
 
-def get_args(pytestargs):
+def expand_combo_args(arglist):
+    """For each combo arg in a list of command ling arg strings, replace it with multiple single args. A combo arg is is multiple single character flags combined into one, such as ['-abc'] which is interpreted as ['-a', '-b', '-c'].
+
+    Arguments:
+        arg {list} -- List of command line argument strings
+
+    Returns:
+        list -- Return a list in which all combo args have been expanded into multiple args.
+    """
+    pattern = re.compile(r"(?<=^-)[a-z]{2,}$")
+
+    result = []
+    for a in arglist:
+        combo_arg = re.search(pattern, a)
+        if combo_arg:
+            for i in list(combo_arg.group(0)):
+                result.append("-" + i)
+        else:
+            result.append(a)
+
+    return result
+
+
+def handle_pytest_args(pytestargs):
     """Add arg to turn off capturing of filedescriptors
     """
-    # TODO Replace with plugin hook
-    return pytestargs + [r"--capture=sys"]
+    resultargs = expand_combo_args(pytestargs)
+
+    badargs = [a for a in resultargs if a in ["--capture=fd"]]
+    for arg in badargs:
+        resultargs.remove(arg)
+
+    nocapargs = [a for a in resultargs if a in ["--capture=sys", "--capture=no", "-s"]]
+    if not any(nocapargs):
+        resultargs.append("--capture=sys")
+
+    return resultargs
 
 
 def call_tests(cwd, pytestargs, default_pytest_src):
@@ -105,7 +138,7 @@ def call_tests(cwd, pytestargs, default_pytest_src):
 
     prep_environment(cwd)
 
-    args = pytestargs + [r"--capture=sys"]
+    args = handle_pytest_args(pytestargs)
     try:
         pytest.main(args=args, plugins=[HandlePytestQt(args)])
     except Exception as e:
