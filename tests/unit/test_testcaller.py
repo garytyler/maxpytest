@@ -2,7 +2,7 @@ from __future__ import print_function
 import os
 import pytest
 import subprocess as sp
-from maxpytest import callscripts
+from maxpytest import callscript_testcaller
 
 # TODO def imported_pytest_is_from_maxpytest_sitepkgs_if_not_avail_in_added
 # TODO def imported_pytest_is_from_added_sitepkgs_if_avail_in_added
@@ -51,13 +51,11 @@ def mock_cwd(tempcwd):
 
 
 @pytest.fixture
-def testcaller(mocker, monkeypatch, request):
+def testcaller(mocker):
     """Patch testcaller attributes required for call_tests to run()"""
-    import maxpytest.callscript_testcaller as _testcaller
-
-    mocker.patch.object(_testcaller, "patch_isatty")
-    mocker.patch.object(_testcaller.os, "chdir")
-    yield _testcaller
+    mocker.patch.object(callscript_testcaller, "patch_isatty")
+    mocker.patch.object(callscript_testcaller.os, "chdir")
+    yield callscript_testcaller
 
 
 class TestExpectedCalls(object):
