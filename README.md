@@ -1,9 +1,8 @@
+# maxpytest
 
-[![PyPI version](https://badge.fury.io/py/maxpytest.svg)](https://badge.fury.io/py/maxpytest)
-[![Build status](https://ci.appveyor.com/api/projects/status/eonytxoyfg9cs33v?svg=true)](https://ci.appveyor.com/project/garytyler/maxpytest-dbke3)
-[![codecov](https://codecov.io/gh/garytyler/maxpytest/branch/master/graph/badge.svg?token=JseFmmlQHm)](https://codecov.io/gh/garytyler/maxpytest)
+[![PyPI version](https://badge.fury.io/py/maxpytest.svg)](https://badge.fury.io/py/maxpytest) [![Build status](https://ci.appveyor.com/api/projects/status/eonytxoyfg9cs33v?svg=true)](https://ci.appveyor.com/project/garytyler/maxpytest-dbke3) [![codecov](https://codecov.io/gh/garytyler/maxpytest/branch/master/graph/badge.svg?token=JseFmmlQHm)](https://codecov.io/gh/garytyler/maxpytest) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-# Overview
+## Overview
 
 Command line tool for a friendly testing workflow using the [Pytest](https://docs.pytest.org/en/latest/)  framework in 3ds Max
 

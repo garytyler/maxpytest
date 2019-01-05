@@ -5,7 +5,6 @@ name = "pypi"
 
 [dev-packages]
 pytest-mock = "*"
-pylint = "*"
 pytest-cov = "*"
 tox = "*"
 
