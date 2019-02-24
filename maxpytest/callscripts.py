@@ -1,6 +1,6 @@
 from __future__ import print_function
 import os
-import pytest
+import sys
 import inspect
 import tempfile
 import callscript_testcaller
@@ -34,7 +34,7 @@ def create_testcaller(cwd, pytestargs):
     except Exception as e:
         print(e)
     """.format(
-        cwd, _pytestargs, pytest.__file__
+        cwd, _pytestargs, sys.executable
     )
     return _create_caller(
         filename=_filename, callblock=_callblock, sourcemodule=_sourcemodule

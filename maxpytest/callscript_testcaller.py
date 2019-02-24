@@ -17,29 +17,29 @@ class HandlePytestQt(object):
         early_config.pluginmanager.set_blocked("pytest-qt")
 
 
-def _get_proj_venv_path(cwd):
+def _get_proj_venv_path(cwd, pyexe):
     """Returns pipenv virtual environment's site-packages path."""
-    proc = sp.Popen(r"pipenv --venv", cwd=cwd, stdout=sp.PIPE)
+    proc = sp.Popen(r"{0} -m pipenv --venv".format(pyexe), cwd=cwd, stdout=sp.PIPE)
     venvpath = proc.communicate()[0].rstrip()
     if not os.path.exists(venvpath):
         raise RuntimeError
     return venvpath
 
 
-def _create_venv_with_pytest(rootdir):
+def _create_venv_with_pytest(rootdir, pyexe):
     """Creates a pipenv virtual environment at root rootdir, and install pytest in the
     virtual environment installed.
     """
     if os.path.exists(rootdir):
         shutil.rmtree(rootdir)
     os.mkdir(rootdir)
-    p1 = sp.Popen(r"pipenv install pytest", cwd=rootdir)
+    p1 = sp.Popen(r"{0} -m pipenv install pytest".format(pyexe), cwd=rootdir)
     p1.wait()
-    if not (p1.returncode is 0):
+    if 0 != p1.returncode:
         raise RuntimeError
 
 
-def _get_temp_venv_path():
+def _get_temp_venv_path(pyexe):
     """Look for a temporary pipenv virtual environment with pytest installed at
     temproot and returns it's path. If one is not found, create one and return it's
     path.
@@ -47,16 +47,16 @@ def _get_temp_venv_path():
     temproot = os.path.join(tempfile.gettempdir(), "maxpytest_temp_venv")
     if os.path.exists(temproot):
         try:
-            venvpath = _get_proj_venv_path(temproot)
+            venvpath = _get_proj_venv_path(temproot, pyexe)
         except RuntimeError:
             pass
         else:
             return venvpath
-    _create_venv_with_pytest(temproot)
-    return _get_proj_venv_path(temproot)
+    _create_venv_with_pytest(temproot, pyexe)
+    return _get_proj_venv_path(temproot, pyexe)
 
 
-def add_sitepkgs(cwd):
+def add_sitepkgs(cwd, pyexe):
     """Get site-packages directory from given project path's virtual environment to
     current python environment and print report.
 
@@ -64,9 +64,9 @@ def add_sitepkgs(cwd):
     :type cwd: str
     """
     try:
-        venvpath = _get_proj_venv_path(cwd)
+        venvpath = _get_proj_venv_path(cwd, pyexe)
     except RuntimeError:
-        venvpath = _get_temp_venv_path()
+        venvpath = _get_temp_venv_path(pyexe)
     finally:
         sitepkgs = os.path.join(venvpath, r"Lib", r"site-packages")
         sys.path.insert(0, sitepkgs)
@@ -130,10 +130,10 @@ def handle_pytest_args(pytestargs):
     return resultargs
 
 
-def call_tests(cwd, pytestargs, default_pytest_src):
+def call_tests(cwd, pytestargs, pyexe):
     """Main function to be called from callblock
     """
-    add_sitepkgs(cwd)
+    add_sitepkgs(cwd, pyexe)
     import pytest
 
     prep_environment(cwd)
