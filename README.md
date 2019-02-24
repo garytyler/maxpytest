@@ -84,7 +84,7 @@ maxpytest -m "C:\\Program Files\\Autodesk\\3ds Max 2019\\3dsmax.exe"
 # Invoke pytest from current working dir in a new instance of 3ds Max 2019
 maxpytest -m 2019
 
-# Invoke pytest from current working dir and run tests in ./tests
+# Invoke pytest from tests/ in a new instance of 3dsMax 2016
 maxpytest -m 2016 -py tests/ -v
 ```
 
